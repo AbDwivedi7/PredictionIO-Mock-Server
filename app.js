@@ -27,8 +27,10 @@ engineServer.listen(ENGINE_SERVER_PORT);
 var eventServer = express();
 eventServer.use(bodyParser.json());
 
-var EVENT_KEYS = ['event', 'entityType', 'entityId', 'targetEntityType',
-                  'targetEntityId', 'properties', 'eventTime'];
+var REQUIRED_EVENT_FIELDS = ['event', 'entityType', 'entityId'];
+var OPTIONAL_EVENT_FIELDS = ['targetEntityType', 'targetEntityId', 'properties',
+                             'eventTime'];
+var ALL_EVENT_FIELDS = REQUIRED_EVENT_FIELDS.concat(OPTIONAL_EVENT_FIELDS);
 var RESERVED_EVENT_NAMES = ['$set', '$unset', '$delete'];
 
 eventServer.post('/events.json', function (req, res) {
@@ -67,12 +69,27 @@ eventServer.post('/events.json', function (req, res) {
     }
 
     var data = req.body;
-    var key;
+    var fields = [];
+    var field, i;
 
-    // Check if all the dictionary keys are valid.
-    for (key in data) {
-      if (data.hasOwnProperty(key) && EVENT_KEYS.indexOf(key) === -1) {
-        console.log('Invalid key in event JSON object: ' + key);
+    for (field in data) {
+      if (data.hasOwnProperty(field)) {
+        fields.push(field);
+      }
+    }
+
+    // Check if all the required fields exist.
+    for (i = 0; i < REQUIRED_EVENT_FIELDS.length; ++i) {
+      if (fields.indexOf(REQUIRED_EVENT_FIELDS[i]) === -1) {
+        console.log('Cannot find the required field: ' + REQUIRED_EVENT_FIELDS[i]);
+        return false;
+      }
+    }
+
+    // Check if all the fields are valid.
+    for (i = 0; i < fields.length; ++i) {
+      if (ALL_EVENT_FIELDS.indexOf(fields[i]) === -1) {
+        console.log('Invalid field in the event JSON object: ' + fields[i]);
         return false;
       }
     }
