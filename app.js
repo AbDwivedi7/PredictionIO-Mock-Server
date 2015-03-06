@@ -7,6 +7,7 @@ var JSON_CONTENT_TYPE = 'application/json';
 
 var express = require('express');
 var bodyParser = require('body-parser');
+var moment = require('moment');
 
 // Engine Server
 var engineServer = express();
@@ -31,6 +32,27 @@ var EVENT_KEYS = ['event', 'entityType', 'entityId', 'targetEntityType',
 var RESERVED_EVENT_NAMES = ['$set', '$unset', '$delete'];
 
 eventServer.post('/events.json', function (req, res) {
+  var verifyDateTime = function (dateTime) {
+    // NOTE: While PredictionIO event server allows this datetime string
+    // `2004-12-13T21:39:45.618+23`, moment cannot parse it so this function
+    // will return false.
+
+    var parsedDateTime = moment(dateTime, moment.ISO_8601);
+
+    // While Moment parse accepts strings without time or other format,
+    // PredictionIO event server only accepts strings with all date, time and
+    // timezone components. For time, milliseconds is optional.
+    var isSupportedFormat = parsedDateTime._f === 'YYYY-MM-DDTHH:mm:ssZ'
+      || parsedDateTime._f === 'YYYY-MM-DDTHH:mm:ss.SSSSZ';
+
+    var isTimezoneUnder2400 = Math.abs(parsedDateTime._tzm) < 1440;
+
+    if (parsedDateTime.isValid() && isSupportedFormat && isTimezoneUnder2400) {
+      return true;
+    }
+    return false;
+  };
+
   var verifyRequest = function (req) {
     // Check if the request is json.
     if (!req.is(JSON_CONTENT_TYPE)) {
@@ -64,6 +86,13 @@ eventServer.post('/events.json', function (req, res) {
     // Check if the event is $unset, the properties dictionary is not empty
     if (data.event === '$unset' && Object.keys(data.properties).length === 0) {
       console.log('Unset event\'s properties cannot be empty');
+      return false;
+    }
+
+    // Check if the event time conforms to ISO 8601 with all date, time and 
+    // timezone components.
+    if (data.eventTime !== undefined && !verifyDateTime(data.eventTime)) {
+      console.log('Event time must conform to ISO 8601 format: ' + data.eventTime);
       return false;
     }
 

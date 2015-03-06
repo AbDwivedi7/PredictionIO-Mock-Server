@@ -23,7 +23,8 @@ JSON format.
     + `targetEntityId`: Optional
     + `properties`: Optional
     + `eventTime`: Must be in ISO 8601 format (e.g.
-      `2004-12-13T21:39:45.618Z`, or `2014-09-09T16:17:42.937-08:00`)
+      `2004-12-13T21:39:45Z`, `2004-12-13T21:39:45.618Z`, 
+      `2014-09-09T16:17:42-23:00` or `2014-09-09T16:17:42.937-08:00`)
   - Response: `201` status code on success and `400` otherwise.
 
 ## Requirements
