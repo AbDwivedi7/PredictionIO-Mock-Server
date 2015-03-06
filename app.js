@@ -19,7 +19,7 @@ engineServer.post('/queries.json', function (req, res) {
   }
 });
 
-console.log('Starting the engine server...');
+console.log('Starting the engine server at port ' + ENGINE_SERVER_PORT + '...');
 engineServer.listen(ENGINE_SERVER_PORT);
 
 // Event Server
@@ -79,5 +79,5 @@ eventServer.post('/events.json', function (req, res) {
   }
 });
 
-console.log('Starting the event server...');
+console.log('Starting the event server at port ' + EVENT_SERVER_PORT + '...');
 eventServer.listen(EVENT_SERVER_PORT);
