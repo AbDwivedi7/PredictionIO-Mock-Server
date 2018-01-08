@@ -14,7 +14,20 @@ const engineServer = express();
 
 engineServer.post('/queries.json', (req, res) => {
   if (req.is(JSON_CONTENT_TYPE)) {
-    res.status(200).json({items: ['foo', 'bar']});
+    // Sample response of a similar product engine template
+    let response = {
+      "itemScores": [
+        {
+          "item": 39,
+          "score": 6.177719297832409
+        },
+        {
+          "item": 79,
+          "score": 5.931687319083594
+        }
+      ]
+    }
+    res.status(200).json(response);
   } else {
     res.status(400).json({});
   }
