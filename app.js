@@ -1,18 +1,18 @@
 'use strict';
 
-var ENGINE_SERVER_PORT = 8000;
-var EVENT_SERVER_PORT = 7070;
-var ACCESS_KEY = '123';
-var JSON_CONTENT_TYPE = 'application/json';
+const ENGINE_SERVER_PORT = 8000;
+const EVENT_SERVER_PORT = 7070;
+const ACCESS_KEY = '123';
+const JSON_CONTENT_TYPE = 'application/json';
 
-var express = require('express');
-var bodyParser = require('body-parser');
-var moment = require('moment');
+const express = require('express');
+const bodyParser = require('body-parser');
+const moment = require('moment');
 
 // Engine Server
-var engineServer = express();
+const engineServer = express();
 
-engineServer.post('/queries.json', function (req, res) {
+engineServer.post('/queries.json', (req, res) => {
   if (req.is(JSON_CONTENT_TYPE)) {
     res.status(200).json({items: ['foo', 'bar']});
   } else {
@@ -24,30 +24,29 @@ console.log('Starting the engine server at port ' + ENGINE_SERVER_PORT + '...');
 engineServer.listen(ENGINE_SERVER_PORT);
 
 // Event Server
-var eventServer = express();
+const eventServer = express();
 eventServer.use(bodyParser.json());
 
-var REQUIRED_EVENT_FIELDS = ['event', 'entityType', 'entityId'];
-var OPTIONAL_EVENT_FIELDS = ['targetEntityType', 'targetEntityId', 'properties',
-                             'eventTime'];
-var ALL_EVENT_FIELDS = REQUIRED_EVENT_FIELDS.concat(OPTIONAL_EVENT_FIELDS);
-var RESERVED_EVENT_NAMES = ['$set', '$unset', '$delete'];
+const REQUIRED_EVENT_FIELDS = ['event', 'entityType', 'entityId'];
+const OPTIONAL_EVENT_FIELDS = ['targetEntityType', 'targetEntityId', 'properties', 'eventTime'];
+const ALL_EVENT_FIELDS = REQUIRED_EVENT_FIELDS.concat(OPTIONAL_EVENT_FIELDS);
+const RESERVED_EVENT_NAMES = ['$set', '$unset', '$delete'];
 
-eventServer.post('/events.json', function (req, res) {
-  var verifyDateTime = function (dateTime) {
+eventServer.post('/events.json', (req, res) => {
+  const verifyDateTime = (dateTime) => {
     // NOTE: While PredictionIO event server allows this datetime string
     // `2004-12-13T21:39:45.618+23`, moment cannot parse it so this function
     // will return false.
 
-    var parsedDateTime = moment(dateTime, moment.ISO_8601);
+    const parsedDateTime = moment(dateTime, moment.ISO_8601);
 
     // While Moment parse accepts strings without time or other format,
     // PredictionIO event server only accepts strings with all date, time and
     // timezone components. For time, milliseconds is optional.
-    var isSupportedFormat = parsedDateTime._f === 'YYYY-MM-DDTHH:mm:ssZ'
+    const isSupportedFormat = parsedDateTime._f === 'YYYY-MM-DDTHH:mm:ssZ'
       || parsedDateTime._f === 'YYYY-MM-DDTHH:mm:ss.SSSSZ';
 
-    var isTimezoneUnder2400 = Math.abs(parsedDateTime._tzm) < 1440;
+    const isTimezoneUnder2400 = Math.abs(parsedDateTime._tzm) < 1440;
 
     if (parsedDateTime.isValid() && isSupportedFormat && isTimezoneUnder2400) {
       return true;
@@ -55,7 +54,7 @@ eventServer.post('/events.json', function (req, res) {
     return false;
   };
 
-  var verifyRequest = function (req) {
+  const verifyRequest = (req) => {
     // Check if the request is json.
     if (!req.is(JSON_CONTENT_TYPE)) {
       console.log('Event request is not of JSON type');
@@ -68,28 +67,27 @@ eventServer.post('/events.json', function (req, res) {
       return false;
     }
 
-    var data = req.body;
-    var fields = [];
-    var field, i;
+    const data = req.body;
+    let fields = [];
 
-    for (field in data) {
+    for (const field in data) {
       if (data.hasOwnProperty(field)) {
         fields.push(field);
       }
     }
 
     // Check if all the required fields exist.
-    for (i = 0; i < REQUIRED_EVENT_FIELDS.length; ++i) {
-      if (fields.indexOf(REQUIRED_EVENT_FIELDS[i]) === -1) {
-        console.log('Cannot find the required field: ' + REQUIRED_EVENT_FIELDS[i]);
+    for (const requiredField of REQUIRED_EVENT_FIELDS) {
+      if (fields.indexOf(requiredField) === -1) {
+        console.log('Cannot find the required field: ' + requiredField);
         return false;
       }
     }
 
     // Check if all the fields are valid.
-    for (i = 0; i < fields.length; ++i) {
-      if (ALL_EVENT_FIELDS.indexOf(fields[i]) === -1) {
-        console.log('Invalid field in the event JSON object: ' + fields[i]);
+    for (const field of fields) {
+      if (ALL_EVENT_FIELDS.indexOf(field) === -1) {
+        console.log('Invalid field in the event JSON object: ' + field);
         return false;
       }
     }
@@ -118,7 +116,7 @@ eventServer.post('/events.json', function (req, res) {
 
   if (verifyRequest(req)) {
     res.status(201).json({
-      'eventId': 'DzyxzpzxAlRNdiDxyChMHgAAAUvpc5HbsI8ZBhEjsvw'
+      eventId: 'DzyxzpzxAlRNdiDxyChMHgAAAUvpc5HbsI8ZBhEjsvw'
     });
   } else {
     res.status(400).json({});
