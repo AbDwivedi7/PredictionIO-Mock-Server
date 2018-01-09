@@ -14,15 +14,15 @@ const engineServer = express();
 
 engineServer.post('/queries.json', (req, res) => {
   if (req.is(JSON_CONTENT_TYPE)) {
-    // Sample response of a similar product engine template
+    // Sample response of a recommendation/similar product engine template
     let response = {
       "itemScores": [
         {
-          "item": 39,
+          "item": "39",
           "score": 6.177719297832409
         },
         {
-          "item": 79,
+          "item": "79",
           "score": 5.931687319083594
         }
       ]
