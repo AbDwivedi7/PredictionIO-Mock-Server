@@ -12,6 +12,8 @@ const moment = require('moment');
 // Engine Server
 const engineServer = express();
 
+const deletedEventIds = new Set();
+
 engineServer.post('/queries.json', (req, res) => {
   if (req.is(JSON_CONTENT_TYPE)) {
     // Sample response of a recommendation/similar product engine template
@@ -82,14 +84,18 @@ eventServer.post('/batch/events.json', (req, res) => {
 
 // Getting an event endpoint
 eventServer.get('/events/:eventID.json', (req, res) => {
-  const event = {
-    event: 'register',
-    entityType: 'user',
-    entityId: 'foo',
-    eventId: 'fake1',
-    eventTime: '2004-12-13T21:39:45.618Z'
+  if (deletedEventIds.has(req.params.eventID)) {
+    res.status(404).json({message: 'Event not found'});
+  } else {
+    const event = {
+      event: 'register',
+      entityType: 'user',
+      entityId: 'foo',
+      eventId: 'fake1',
+      eventTime: '2004-12-13T21:39:45.618Z'
+    }
+    res.status(200).json(event);
   }
-  res.status(200).json(event);
 });
 
 // Getting events endpoint
@@ -115,6 +121,7 @@ eventServer.get('/events.json', (req, res) => {
 
 // Deleting an event endpoint
 eventServer.delete('/events/:eventID.json', (req, res) => {
+  deletedEventIds.add(req.params.eventID);
   res.status(200).json({});
 });
 
