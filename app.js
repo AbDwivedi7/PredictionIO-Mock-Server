@@ -51,7 +51,7 @@ const RESERVED_EVENT_NAMES = ['$set', '$unset', '$delete'];
 eventServer.post('/events.json', (req, res) => {
   if (verifyRequest(req) && verifyEvent(req.body)) {
     res.status(201).json({
-      eventId: 'DzyxzpzxAlRNdiDxyChMHgAAAUvpc5HbsI8ZBhEjsvw'
+      eventId: makeRandomID()
     });
   } else {
     res.status(400).json({});
@@ -212,4 +212,14 @@ function verifyEvent(event) {
   }
 
   return true;
+}
+
+function makeRandomID(length=10) {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < length; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
 }
