@@ -18,14 +18,14 @@ engineServer.post('/queries.json', (req, res) => {
   if (req.is(JSON_CONTENT_TYPE)) {
     // Sample response of a recommendation/similar product engine template
     let response = {
-      "itemScores": [
+      itemScores: [
         {
-          "item": "39",
-          "score": 6.177719297832409
+          item: "39",
+          score: 6.177719297832409
         },
         {
-          "item": "79",
-          "score": 5.931687319083594
+          item: "79",
+          score: 5.931687319083594
         }
       ]
     }
@@ -65,13 +65,13 @@ eventServer.post('/batch/events.json', (req, res) => {
     for (const event of req.body) {
       if (verifyEvent(event)) {
         responses.push({
-          'status': 201,
-          'eventId': 'fakeID'
+          status: 201,
+          eventId: 'fakeID'
         });
       } else {
         responses.push({
-          'status': 400,
-          'message': 'Invalid event'
+          status: 400,
+          message: 'Invalid event'
         });
       }
     }
