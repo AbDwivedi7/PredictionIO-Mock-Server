@@ -15,7 +15,7 @@ JSON format.
   - URL: `http://localhost:7070/events.json?accessKey=123`
   - Access key: `123` (as in the above URL's query string)
   - Data is a JSON object with the following fields:
-    + `event`: Only reversed event names: `$set`, `$unset` and `$delete` 
+    + `event`: Only reversed event names: `$set`, `$unset` and `$delete`
       are accepted. Other event names must not start with `$`.
     + `entityType`
     + `entityId`
@@ -23,14 +23,14 @@ JSON format.
     + `targetEntityId`: Optional
     + `properties`: Optional
     + `eventTime`: Must be in ISO 8601 format (e.g.
-      `2004-12-13T21:39:45Z`, `2004-12-13T21:39:45.618Z`, 
+      `2004-12-13T21:39:45Z`, `2004-12-13T21:39:45.618Z`,
       `2014-09-09T16:17:42-23:00` or `2014-09-09T16:17:42.937-08:00`)
   - Response: `201` status code on success and `400` otherwise.
 
 ## Requirements
 
-- Node.js (0.10.32)
-- npm (1.4.28)
+- Node.js (12.10.0)
+- npm (6.10.3)
 
 ## Installation
 
@@ -41,7 +41,7 @@ $ npm install
 $ node app.js
 ```
 
-To run the mock server on Travis CI, simply add the following to `.travis.yml` 
+To run the mock server on Travis CI, simply add the following to `.travis.yml`
 file.
 
 ```yaml
